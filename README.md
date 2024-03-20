@@ -18,8 +18,57 @@ If you just need to load static pre-annotated data into Label Studio, running an
 Follow this example tutorial to create a ML backend service:
 
 1. Install the latest Label Studio ML SDK:
+
+### Fork Label Studio ML & set upstream repo
+
+Label Studio ML allows to automatically trigger models on images uploaded Label Studio.
+Some function needs to be written in order to plug the AI model to Label Studio. As a consequence, we will fork the official repo in order to be able to add pipeline functions between LS and the AI model. We will also set the offical Label Studio ML as an upstream remote to be able to pull offical updates regularly.
+
+1. **Clone Your Fork:**
+
+    Clone your forked repository to your local machine. This sets your fork as the origin remote automatically.
+
+    ```bash
+    git clone git@github.com:ROSFactory/label-studio-ml-backend.git
+    cd label-studio-ml-backend
+    ```
+
+1. **Add the Original Repository as an Upstream Remote:**
+
+    Add the original repository as a new remote named upstream. This allows you to fetch changes from the original repository.
+
+    ```bash
+    git remote add upstream https://github.com/HumanSignal/label-studio-ml-backend.git
+    ```
+
+1. **Fetch Updates from the Original Repository:**
+
+    Whenever you want to pull updates from the original repository, fetch the changes and merge them into your local branch:
+
+    ```bash    
+    git checkout master
+    git pull --rebase upstream master
+    ```
+
+1. **Resolve Merge Conflicts:**
+
+    If there are any conflicts between your changes and the updates from the original repository, you'll need to resolve them manually. After resolving conflicts, commit the changes.
+
+1. **Push Updates to Your Fork:**
+
+    After merging the updates from the original repository, push the changes to your fork (origin).
+
+    ```bash
+    git push origin master
+    ```
+
+1. **Continue Making Your Changes:**
+
+    You can now continue making your personal changes to the repository, commit them, and push them to your fork without affecting the original repository.
+
+By setting up your repository this way, you keep a channel open to pull in updates from the original repository while maintaining your personal changes in your fork. Just remember to regularly fetch and merge the changes from the upstream remote to stay up-to-date with the original repository.
+
    ```bash
-   git clone https://github.com/HumanSignal/label-studio-ml-backend.git
    cd label-studio-ml-backend/
    pip install -e .
    ```
