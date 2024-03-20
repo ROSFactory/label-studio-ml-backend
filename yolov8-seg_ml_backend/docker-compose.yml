@@ -1,17 +1,34 @@
-version: "3.8"
+version: '3.8'
 
 services:
-  ml-backend:
-    container_name: ml-backend
-    image: humansignal/ml-backend:v0
-    build: .
-    environment:
-      - MODEL_DIR=/data/models
-      - WORKERS=2
-      - THREADS=4
-      - LOG_LEVEL=DEBUG
-      - ANY=PARAMETER
+  label-studio:
+    image: heartexlabs/label-studio:latest  # Use the latest Label Studio image
     ports:
-      - "9090:9090"
+      - "8080:8080"  # Map the ports to access Label Studio from your browser
     volumes:
-      - /home/nicolas/.local/share/label-studio:/app/data
+      - ml_backend_data:/label-studio/data  # Persist data
+    networks:
+      - mynetwork
+
+  ml-backend:
+    build: .
+    ports:
+      - "9090:9090"  # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data  # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the model file
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg.pt
+      PORT: 9090
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  ml_backend_data:

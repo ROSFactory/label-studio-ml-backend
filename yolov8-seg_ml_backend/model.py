@@ -21,9 +21,8 @@ class NewModel(LabelStudioMLBase):
             self, "initialized"
         ):  # This ensures __init__ code is executed only once
             super(NewModel, self).__init__(**kwargs)
-            self.model = YOLO(
-                "/home/nicolas/Documents/git/computer-vision/curiosity/models/yolov8s-seg.pt"
-            )
+            model_path = os.getenv("MODEL_PATH", "/app/models/yolov8s-seg.pt")
+            self.model = YOLO(model_path)
             self.initialized = True
             print("Init DONE")
 
