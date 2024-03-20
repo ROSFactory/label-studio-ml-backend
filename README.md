@@ -103,6 +103,28 @@ By setting up your repository this way, you keep a channel open to pull in updat
    
 This ML backend is an example provided by Label Studio. It actually doesn't do anything. If you want to implement the actual inference logic, go to the next section.
 
+## Adjusted Strategy for Organizing Branches:
+1. Maintain a Clean master Branch that should always mirror the upstream master repo
+```bash
+git checkout master
+git pull upstream master
+git push origin master
+```
+2. Use Feature Branches for Personal Work
+```bash
+git checkout master
+git checkout -b feature-branch-name
+```
+3. Personal Work should be integrated in the development branch, and NOT master
+```bash
+git checkout master
+git checkout -b development
+git merge feature-branch-name
+```
+4. Pull Requests and Merging
+Merge Features Judiciously: Use pull requests to merge changes from your feature branches to the development branch.
+
+
 ## Implement prediction logic
 In your model directory, locate the `model.py` file (for example, `my_ml_backend/model.py`).
 
