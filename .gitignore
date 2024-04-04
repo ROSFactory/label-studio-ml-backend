@@ -135,3 +135,4 @@ dmypy.json
 
 # Added by nicolas
 *.db
+*.pem

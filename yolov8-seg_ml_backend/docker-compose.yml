@@ -9,6 +9,7 @@ services:
       - ml_backend_data:/label-studio/data  # Persist data
     environment:
       LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: true
+      SSRF_PROTECTION_ENABLED: true
     networks:
       - mynetwork
 
@@ -20,7 +21,7 @@ services:
       - ml_backend_data:/app/data  # Mount the Label Studio data
       - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
     environment:
-      MODEL_PATH: /app/models/yolov8s-seg.pt
+      MODEL_PATH: /app/models/painted-small.pt
       PORT: 9090
       WORKERS: 2
       THREADS: 4
@@ -28,6 +29,23 @@ services:
       - label-studio
     networks:
       - mynetwork
+
+  yolo-backend:
+    build: .
+    # ports:
+    #   - "9090:9090"  # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data  # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg.pt
+      PORT: 9091
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork      
   
   nginx:
     image: nginx:latest
