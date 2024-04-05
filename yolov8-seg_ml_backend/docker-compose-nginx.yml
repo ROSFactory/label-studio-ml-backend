@@ -2,11 +2,11 @@ version: '3.8'
 
 services:
   label-studio:
-    image: heartexlabs/label-studio:latest # Use the latest Label Studio image
-    ports:
-      - "8080:8080" # Map the ports to access Label Studio from your browser
+    image: heartexlabs/label-studio:latest  # Use the latest Label Studio image
+    # ports:
+    #   - "8080:8080"  # Map the ports to access Label Studio from your browser
     volumes:
-      - ml_backend_data:/label-studio/data # Persist data
+      - ml_backend_data:/label-studio/data  # Persist data
     environment:
       LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: true
       SSRF_PROTECTION_ENABLED: true
@@ -15,10 +15,10 @@ services:
 
   ml-backend:
     build: .
-    ports:
-      - "9090:9090" # Expose the ML backend port
+    # ports:
+    #   - "9090:9090"  # Expose the ML backend port
     volumes:
-      - ml_backend_data:/app/data # Mount the Label Studio data
+      - ml_backend_data:/app/data  # Mount the Label Studio data
       - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
     environment:
       MODEL_PATH: /app/models/painted-small.pt
@@ -32,10 +32,10 @@ services:
 
   yolo-backend:
     build: .
-    ports:
-      - "9091:9091" # Expose the ML backend port
+    # ports:
+    #   - "9090:9090"  # Expose the ML backend port
     volumes:
-      - ml_backend_data:/app/data # Mount the Label Studio data
+      - ml_backend_data:/app/data  # Mount the Label Studio data
       - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
     environment:
       MODEL_PATH: /app/models/yolov8s-seg.pt
@@ -45,24 +45,24 @@ services:
     depends_on:
       - label-studio
     networks:
+      - mynetwork      
+  
+  nginx:
+    image: nginx:latest
+    container_name: nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/nginx:/etc/nginx/conf.d
+      - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/ssl:/etc/nginx/ssl
+    depends_on:
+      - label-studio
+    networks:
       - mynetwork
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/nginx:/etc/nginx/conf.d
-  #     - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/ssl:/etc/nginx/ssl
-  #   depends_on:
-  #     - label-studio
-  #   networks:
-  #     - mynetwork
 
 networks:
   mynetwork:
-
 
 volumes:
   ml_backend_data:
