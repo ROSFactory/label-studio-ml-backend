@@ -15,3 +15,6 @@ $ curl http://localhost:9090/health
 ```
 
 3. Connect to the backend from Label Studio: go to your project `Settings -> Machine Learning -> Add Model` and specify `http://ml-backend:9090` as a URL.
+
+4. Minio
+For now do not use pre-signed urls. It looks like the data cannot be accessed by Label Studio otherwise.

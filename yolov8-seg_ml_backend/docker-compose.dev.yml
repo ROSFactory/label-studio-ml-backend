@@ -10,6 +10,7 @@ x-logging:
 services:
   label-studio:
     image: heartexlabs/label-studio:latest # Use the latest Label Studio image
+    restart: unless-stopped
     ports:
       - "8080:8080" # Map the ports to access Label Studio from your browser
     volumes:
@@ -23,6 +24,7 @@ services:
 
   ml-backend:
     build: .
+    restart: unless-stopped
     ports:
       - "9090:9090" # Expose the ML backend port
     volumes:
@@ -40,6 +42,7 @@ services:
 
   yolo-backend:
     build: .
+    restart: unless-stopped
     ports:
       - "9091:9091" # Expose the ML backend port
     volumes:
