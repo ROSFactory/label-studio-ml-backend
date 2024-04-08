@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.8"
 
 services:
   label-studio:
@@ -46,23 +46,9 @@ services:
       - label-studio
     networks:
       - mynetwork
-  # nginx:
-  #   image: nginx:latest
-  #   container_name: nginx
-  #   ports:
-  #     - "80:80"
-  #     - "443:443"
-  #   volumes:
-  #     - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/nginx:/etc/nginx/conf.d
-  #     - /home/nicolas/Documents/git/label-studio-ml-backend/yolov8-seg_ml_backend/ssl:/etc/nginx/ssl
-  #   depends_on:
-  #     - label-studio
-  #   networks:
-  #     - mynetwork
 
 networks:
   mynetwork:
-
 
 volumes:
   ml_backend_data:
