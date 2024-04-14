@@ -34,17 +34,16 @@ class NewModel(LabelStudioMLBase):
         :param context: [Label Studio context in JSON format](https://labelstud.io/guide/ml.html#Passing-data-to-ML-backend)
         :return predictions: [Predictions array in JSON format](https://labelstud.io/guide/export.html#Raw-JSON-format-of-completed-tasks)
         """
-        # basename = "/users/nicolas/Library/Application Support/label-studio" # from mac
-        # basename = "/home/nicolas/.local/share/label-studio" # for label-studio ml backend in dev mode
-        basename = "/app/data"  # for label-studio ml backend in prod mode
-        # self.model = YOLO("/Users/nicolas/git/computer-vision-airbus/curiosity/models/yolov8n-seg.pt")
+        # basename = "/app/data"  # for images stored locally
+        basename = "http://minio:9000/"  # for images in MinIO bucket
         predictions = []
 
         for task in tasks:
             image_relative_path = task.get("data").get("image")
             image_absolute_path = os.path.join(
-                basename, image_relative_path.replace("/data/", "media/")
+                basename, image_relative_path.replace("s3://", "")
             )
+            print(f"Relative path: ", image_relative_path)
             print(f"Absolute path: ", image_absolute_path)
             results = self.model(
                 image_absolute_path
