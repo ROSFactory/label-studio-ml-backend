@@ -22,7 +22,7 @@ services:
       - mynetwork
     logging: *default-logging
 
-  ml-backend:
+  aluminium-panels-ml:
     build: .
     restart: unless-stopped
     ports:
@@ -31,7 +31,7 @@ services:
       - ml_backend_data:/app/data # Mount the Label Studio data
       - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
     environment:
-      MODEL_PATH: /app/models/painted-small.pt
+      MODEL_PATH: /app/models/yolov8s-seg-alu-panels.pt
       PORT: 9090
       WORKERS: 2
       THREADS: 4
@@ -40,7 +40,7 @@ services:
     networks:
       - mynetwork
 
-  yolo-backend:
+  painted-panels-ml:
     build: .
     restart: unless-stopped
     ports:
@@ -49,8 +49,26 @@ services:
       - ml_backend_data:/app/data # Mount the Label Studio data
       - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
     environment:
-      MODEL_PATH: /app/models/yolov8s-seg.pt
+      MODEL_PATH: /app/models/yolov8s-seg-painted-panels.pt
       PORT: 9091
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork
+
+  yolo-ml:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9092:9092" # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg.pt
+      PORT: 9092
       WORKERS: 2
       THREADS: 4
     depends_on:
@@ -76,7 +94,7 @@ services:
 
 networks:
   mynetwork:
-
+    driver: bridge
 
 volumes:
   ml_backend_data:
