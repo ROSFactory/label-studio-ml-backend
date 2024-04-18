@@ -1,0 +1,101 @@
+version: "3.9"
+
+x-logging:
+  logging: &default-logging
+    driver: "local"
+    options:
+      max-size: "10m"
+      max-file: "3"
+
+services:
+  label-studio:
+    image: heartexlabs/label-studio:latest # Use the latest Label Studio image
+    restart: unless-stopped
+    ports:
+      - "8080:8080" # Map the ports to access Label Studio from your browser
+    volumes:
+      - ml_backend_data:/label-studio/data # Persist data
+    environment:
+      LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: true
+      SSRF_PROTECTION_ENABLED: true
+    networks:
+      - mynetwork
+    logging: *default-logging
+
+  aluminium-panels-ml:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9090:9090" # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg-alu-panels.pt
+      PORT: 9090
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork
+
+  painted-panels-ml:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9091:9091" # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg-painted-panels.pt
+      PORT: 9091
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork
+
+  yolo-ml:
+    build: .
+    restart: unless-stopped
+    ports:
+      - "9092:9092" # Expose the ML backend port
+    volumes:
+      - ml_backend_data:/app/data # Mount the Label Studio data
+      - /home/nicolas/Documents/git/computer-vision/curiosity/models:/app/models # Mount the models
+    environment:
+      MODEL_PATH: /app/models/yolov8s-seg.pt
+      PORT: 9092
+      WORKERS: 2
+      THREADS: 4
+    depends_on:
+      - label-studio
+    networks:
+      - mynetwork
+
+  minio:
+    image: quay.io/minio/minio:RELEASE.2023-03-13T19-46-17Z
+    command: server /data --console-address ":9009"
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+      - "9009:9009"
+    volumes:
+      - minio-data:/data
+    environment:
+      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
+      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
+    networks:
+      - mynetwork
+    logging: *default-logging
+
+networks:
+  mynetwork:
+    driver: bridge
+
+volumes:
+  ml_backend_data:
+  minio-data:

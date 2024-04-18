@@ -1,7 +1,6 @@
 # What is the Label Studio ML backend?
 
-The Label Studio ML backend is an SDK that lets you wrap your machine learning code and turn it into a web server.
-The web server can be connected to a running [Label Studio](https://labelstud.io/) instance to automate labeling tasks.
+The Label Studio ML backend is an SDK that lets you wrap your machine learning code and turn it into a web server. The web server can be connected to a running [Label Studio](https://labelstud.io/) instance to automate labeling tasks.
 
 If you just need to load static pre-annotated data into Label Studio, running an ML backend might be overkill for you.
 Instead, you can [import preannotated data](https://labelstud.io/guide/predictions.html).
