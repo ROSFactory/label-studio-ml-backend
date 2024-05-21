@@ -16,15 +16,42 @@ services:
     volumes:
       - ml_backend_data:/label-studio/data # Persist data
     environment:
-      LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: true
+      DJANGO_DB: default
+      POSTGRE_NAME: postgres
+      POSTGRE_USER: postgres
+      POSTGRE_PASSWORD:
+      POSTGRE_PORT: 5432
+      POSTGRE_HOST: db
+      LABEL_STUDIO_HOST: ${LABEL_STUDIO_HOST:-}
+      # LABEL_STUDIO_DISABLE_SIGNUP_WITHOUT_LINK: true
       SSRF_PROTECTION_ENABLED: true
+    networks:
+      - mynetwork
+    logging: *default-logging
+
+  db:
+    image: postgres:11.5
+    hostname: db
+    restart: unless-stopped
+    # Optional: Enable TLS on PostgreSQL
+    # Just drop your server.crt and server.key into folder 'deploy/pgsql/certs'
+    # NOTE: Both files must have permissions u=rw (0600) or less
+    #    command: >
+    #      -c ssl=on
+    #      -c ssl_cert_file=/var/lib/postgresql/certs/server.crt
+    #      -c ssl_key_file=/var/lib/postgresql/certs/server.key
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - ${POSTGRES_DATA_DIR:-./postgres-data-dev}:/var/lib/postgresql/data
+      - ./deploy/pgsql/certs:/var/lib/postgresql/certs:ro
     networks:
       - mynetwork
     logging: *default-logging
 
   aluminium-panels-ml:
     build: .
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "9090:9090" # Expose the ML backend port
     volumes:
@@ -42,7 +69,7 @@ services:
 
   painted-panels-ml:
     build: .
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "9091:9091" # Expose the ML backend port
     volumes:
@@ -60,7 +87,7 @@ services:
 
   yolo-ml:
     build: .
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "9092:9092" # Expose the ML backend port
     volumes:
@@ -79,12 +106,12 @@ services:
   minio:
     image: quay.io/minio/minio:RELEASE.2023-03-13T19-46-17Z
     command: server /data --console-address ":9009"
-    restart: unless-stopped
+    # restart: unless-stopped
     ports:
       - "9000:9000"
       - "9009:9009"
     volumes:
-      - minio-data:/data
+      - minio-data-dev:/data
     environment:
       - MINIO_ROOT_USER=${MINIO_ROOT_USER}
       - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
@@ -98,4 +125,4 @@ networks:
 
 volumes:
   ml_backend_data:
-  minio-data:
+  minio-data-dev:
