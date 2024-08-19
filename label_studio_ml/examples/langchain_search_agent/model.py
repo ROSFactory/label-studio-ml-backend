@@ -41,11 +41,14 @@ class SearchResults(BaseCallbackHandler):
                 self.snippets.append(snippet)
 
 
-class NewModel(LabelStudioMLBase):
+class LangchainSearchAgent(LabelStudioMLBase):
     PROMPT_PREFIX = os.getenv('PROMPT_PREFIX', 'prompt')
     RESPONSE_PREFIX = os.getenv('RESPONSE_PREFIX', 'response')
     SNIPPETS_PREFIX = os.getenv('SNIPPETS_PREFIX', 'snippets')
     PROMPT_TEMPLATE = os.getenv('PROMPT_TEMPLATE', '{prompt}{text}')
+
+    def setup(self):
+        self.set("model_version", f'{self.__class__.__name__}-v0.0.1')
 
     def get_prompt(self, annotation, prompt_from_name) -> str:
         result = annotation['result']
@@ -115,7 +118,7 @@ class NewModel(LabelStudioMLBase):
         }
 
         for task in tasks:
-            text = task['data'][value]
+            text = self.preload_task_data(task, task['data'][value])
             full_prompt = self.PROMPT_TEMPLATE.format(prompt=prompt, text=text)
             logger.info(f'Full prompt: {full_prompt}')
             llm_result = agent.run(full_prompt)
@@ -148,7 +151,10 @@ class NewModel(LabelStudioMLBase):
                         'text': snippets
                     }
                 })
-            predictions.append({'result': result})
+            predictions.append({
+                'result': result,
+                'model_version': self.get('model_version'),
+            })
 
         return predictions
 

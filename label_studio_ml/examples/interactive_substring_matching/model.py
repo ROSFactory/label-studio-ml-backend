@@ -6,14 +6,17 @@ from uuid import uuid4
 from typing import List, Dict, Optional
 from label_studio_ml.model import LabelStudioMLBase
 from label_studio_ml.response import ModelResponse
-from label_studio_sdk.objects import PredictionValue
+from label_studio_sdk.label_interface.objects import PredictionValue
 
 logger = logging.getLogger(__name__)
 
 
-class NewModel(LabelStudioMLBase):
+class InteractiveSubstringMatching(LabelStudioMLBase):
     """Custom ML Backend model
     """
+
+    def setup(self):
+        self.set("model_version", f'{self.__class__.__name__}-v0.0.1')
 
     def _extract_keywords(self, input_text, keyword_to_search, labels, from_name, to_name) -> PredictionValue:
         result = []
@@ -62,12 +65,12 @@ class NewModel(LabelStudioMLBase):
         labels = result['value']['labels']
         keyword_to_search = result['value']['text']
         for task in tasks:
-            input_text = task['data'].get(value)
+            input_text = self.preload_task_data(task, task['data'].get(value))
             if not input_text:
-                logger.warning(f"No input text found in task: {task}")
+                logger.warning(f"No input text found in task: {task}, input_text={input_text}")
                 continue
 
             prediction = self._extract_keywords(input_text, keyword_to_search, labels, from_name, to_name)
             predictions.append(prediction)
         
-        return ModelResponse(predictions=predictions)
+        return ModelResponse(predictions=predictions, model_version=self.get("model_version"))

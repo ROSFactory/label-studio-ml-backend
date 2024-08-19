@@ -1,7 +1,4 @@
-label-studio-ml @ git+https://github.com/HumanSignal/label-studio-ml-backend.git
-
 boto3>=1.26.103,<2.0.0
 openmim~=0.3.9
-
-pytest
-pytest-cov
+mmcv>=2.0.0rc4,<2.2.0
+numpy~=1.26
