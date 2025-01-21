@@ -133,3 +133,7 @@ dmypy.json
 
 .idea/
 cache.db
+
+# models
+*.pt
+yolo-seg/.DS_Store

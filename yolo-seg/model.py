@@ -23,9 +23,10 @@ class NewModel(LabelStudioMLBase):
         ):  # This ensures __init__ code is executed only once
             super(NewModel, self).__init__(**kwargs)
             model_path = os.getenv("MODEL_PATH", "/app/models/yolov8s-seg.pt")
-            self.model = YOLO(model_path)
+            # Load model with explicit task type
+            self.model = YOLO(model_path, task="segment")
             self.initialized = True
-            print("Init DONE")
+            print(f"Init DONE - Model loaded from {model_path}")
 
     def predict(
         self, tasks: List[Dict], context: Optional[Dict] = None, **kwargs
@@ -53,7 +54,7 @@ class NewModel(LabelStudioMLBase):
 
             for result in results:
                 # image_height, image_width = result.orig_shape
-                detections = json.loads(result.tojson(normalize=True))
+                detections = json.loads(result.to_json(normalize=True))
                 score = 1
 
                 for detection in detections:
