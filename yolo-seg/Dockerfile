@@ -20,13 +20,13 @@ RUN --mount=type=cache,target="/var/cache/apt",sharing=locked \
     apt-get update; \
     apt-get upgrade -y; \
     apt-get install --no-install-recommends -y \
-        git \
-        curl \
-        ca-certificates \
-        wget \
-        libgl1-mesa-glx \
-        libglib2.0-0 \
-        liblzma-dev; \
+    git \
+    curl \
+    ca-certificates \
+    wget \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
+    liblzma-dev; \
     apt-get autoremove -y; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*
@@ -45,11 +45,11 @@ RUN --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
 COPY requirements-test.txt .
 RUN --mount=type=cache,target=${PIP_CACHE_DIR},sharing=locked \
     if [ "$TEST_ENV" = "true" ]; then \
-      pip install -r requirements-test.txt; \
+    pip install -r requirements-test.txt; \
     fi
 
 COPY . .
 
-EXPOSE 9090
+EXPOSE ${PORT:-9090}
 
 CMD gunicorn --preload --bind :$PORT --workers $WORKERS --threads $THREADS --timeout 0 _wsgi:app
